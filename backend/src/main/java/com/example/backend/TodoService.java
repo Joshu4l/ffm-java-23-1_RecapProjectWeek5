@@ -1,41 +1,63 @@
 package com.example.backend;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
+import java.util.UUID;
+
 
 @Service
-@RequiredArgsConstructor
 public class TodoService {
 
-    // Repo Instance...
+    // Repo Instance ...
     private final TodoRepo todoRepo;
-    // ... and its dependency injection
+    // ... and its dependency injection:
+    public TodoService(TodoRepo todoRepo) { this.todoRepo = todoRepo; }
 
-    /*
-        on HTML-page:
-        board/todo
-        board/doing
-        board/done
 
-        defined by todo-api-service.js
-        getAllTodos
-        getTodoById
-        postTodo
-        putTodo
-        deleteTodo
-     */
+    // INVOKING THE SERVICE CLASS'S METHODS BELOW:
 
-    @GetMapping("/")
-    public List<String> getAllTodos() {
+    public Todo saveTodo(NewTodo newTodo) {
+
+        Todo todo = new Todo(UUID.randomUUID().toString(), newTodo.description(), Status.OPEN);
+        return todoRepo.save(todo);
+    }
+
+
+
+    public List<Todo> findAllTodos() {
         return todoRepo.findAll();
     }
 
 
 
+    public Todo findTodoById(String id)  {
+        Todo match = todoRepo.findById(id).orElseThrow();
+
+        return match;
+
+    }
 
 
+
+    @ExceptionHandler(IllegalArgumentException.class) // picking up what might be thrown by the 'getByBrand'-method above
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleIllegalArgumentException(IllegalArgumentException e) {
+        /*
+            In here, first specify the general (handling) message that shall be returned to the client
+
+            And (optionally) pick up the EXCEPTION OBJECT ('e') to map it on our ErrorMessage-class
+            by passing in its own, individually-set message as the only argument:
+        */
+        String generalHandlingMessage = "Sorry, there seem to be matching entries for the brand you specified: ";
+        ErrorMessage actualErrorMessageObject = new ErrorMessage(e.getMessage());
+        /*
+            After the instantiation of the ErrorMessage-object above,
+            it can also be returned to the client (as a bonus if you will):
+        */
+        return generalHandlingMessage + actualErrorMessageObject;
+    }
 
 }
