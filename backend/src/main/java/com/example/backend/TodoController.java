@@ -14,7 +14,6 @@ public class TodoController {
 
 
     // INVOKING OF THE SERVICE CLASS'S METHODS BELOW:
-
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED) // REPRESENTING OUR RESPONSE HEADER
     public Todo createTodo(@RequestBody NewTodo newTodo) {
@@ -32,25 +31,28 @@ public class TodoController {
 
 
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK) // REPRESENTING OUR RESPONSE HEADER
     public Todo getToDoById(@PathVariable String id) {
 
-        return todoService.findTodoById(id);
+        return todoService.findTodoById(id); // REPRESENTING OUR RESPONSE BODY
+    }
+
+
+    @PutMapping ("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Todo updateTodoById(@PathVariable String id, @RequestBody Todo todo) {
+        //TODO:
+        return todoService.putTodoById(id, todo);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public String deleteTodo(@PathVariable String id) {
+        //TODO:
+        return todoService.deleteTodobyId(id);
     }
 
 
 
-
-
-    /*@PutMapping ("/{id}")
-    public Todo putTodo(@PathVariable String id, @RequestBody Todo todo) {
-        //TODO:
-        return todoService.updateTodo(todo);
-    }*/
-
-    /*@DeleteMapping String deleteTodo() {
-        //TODO:
-        return null;
-    }*/
 
 }
